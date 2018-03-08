@@ -12,13 +12,14 @@
 class Value : public smart_pimpl::pimpl<Value>::Value {
 public:
     Value() = default;
-    Value(int q1, int q2, const std::string &s);
 
-    int get_q1();
-    int get_q2();
-    std::string get_s();
+    explicit Value(int n);
 
-    auto mult() -> int;
+    auto get_n() -> int;
+
+    auto set_n(int m) -> void;
+
+    auto mult(int m) -> int;
 };
 
 

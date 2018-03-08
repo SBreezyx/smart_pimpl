@@ -3,12 +3,36 @@
 //
 
 #include <cstdlib>
+#include <cassert>
 
 #include "value.h"
 
-int main() {
+void test_default_construct_mv()
+{
    Value v1;
-   (void)v1;
-   
+
+   assert(v1.get_n() == 0);
+
+   Value v2 = std::move(v1);
+
+   assert(v2.get_n() == 0);
+}
+
+void test_nodefault_construct_mv()
+{
+   Value v1{1};
+
+   assert(v1.get_n() == 1);
+
+   Value v2 = std::move(v1);
+
+   assert(v2.get_n() == 1);
+}
+
+int main()
+{
+    test_default_construct_mv();
+    test_nodefault_construct_mv();
+
    return EXIT_SUCCESS;
 }

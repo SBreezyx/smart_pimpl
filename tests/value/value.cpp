@@ -8,39 +8,31 @@ using Base = smart_pimpl::pimpl<Value>;
 
 template<>
 struct Base::Impl {
-   Impl(int q1, int q2, const std::string &s) :
-         q1_{ q1 },
-         q2_{ q2 },
-         s_{ s }
-   {}
+    explicit Impl(int n = 0) :
+        n_{ n }
+    {}
 
-   int q1_ = 0;
-   int q2_ = 0;
-   std::string s_ = "";
+    int n_;
 };
 
 
-Value::Value(int q1, int q2, const std::string &s) :
-   Base(q1, q2, s)
+Value::Value(int n) :
+    Base(n)
 {
 }
 
-auto Value::mult() -> int
+auto Value::mult(int m) -> int
 {
-   return impl()->q1_ * impl()->q2_;
+    return impl()->n_ * m;
 }
 
-int Value::get_q1()
+auto Value::get_n() -> int
 {
-    return impl()->q1_;
+    return impl()->n_;
 }
 
-int Value::get_q2()
+auto Value::set_n(int m) -> void
 {
-    return impl()->q2_;
+    impl()->n_ = m;
 }
 
-std::string Value::get_s()
-{
-    return impl()->s_;
-}

@@ -3,12 +3,19 @@
 //
 
 #include <cstdlib>
+#include <cassert>
 
 #include "value.h"
 
-int main() {
-   Value v{0, 100, "Swag"};
-   (void)v;
-   
-   return EXIT_SUCCESS;
+void test_nodefault()
+{
+    Value v{ 1 };
+
+    assert(v.get_n() == 1);
+}
+
+int main()
+{
+    test_nodefault();
+    return EXIT_SUCCESS;
 }

@@ -6,6 +6,17 @@
 #define SMART_PIMPL_IMPL_PTR_HPP
 
 namespace smart_pimpl {
+    /* Forward Declarations for operators */
+    template <typename Data> class impl_ptr;
+
+    template<typename Data> bool operator== (const impl_ptr<Data> &lhs, const impl_ptr<Data> &rhs);
+    template<typename Data> bool operator!= (const impl_ptr<Data> &lhs, const impl_ptr<Data> &rhs);
+
+    template<typename Data> bool operator== (nullptr_t ptr, const impl_ptr<Data> &rhs) noexcept;
+    template<typename Data> bool operator!= (nullptr_t ptr, const impl_ptr<Data> &rhs) noexcept;
+
+    template<typename Data> bool operator== (const impl_ptr<Data> &lhs, nullptr_t ptr) noexcept;
+    template<typename Data> bool operator!= (const impl_ptr<Data> &lhs, nullptr_t ptr) noexcept;
 
     template<typename Data>
     class impl_ptr {
@@ -16,7 +27,8 @@ namespace smart_pimpl {
         using copy_type = Copier<Data>;
 
         explicit impl_ptr(Data *data, deleter_type del = default_delete<Data>, copy_type cp = default_copy<Data>);
-        impl_ptr() = default;
+        constexpr impl_ptr() noexcept;
+        constexpr impl_ptr(nullptr_t) noexcept;
 
         ~impl_ptr();
 
@@ -28,13 +40,22 @@ namespace smart_pimpl {
 
         impl_ptr &operator=(impl_ptr &&other) noexcept;
 
-        Data *operator->();
-
+              Data *operator->();
         const Data *operator->() const;
 
-        Data &operator*();
-
+              Data &operator*();
         const Data &operator*() const;
+
+        operator bool();    // NOLINT
+
+        friend bool operator== <> (const impl_ptr<Data> &lhs, const impl_ptr<Data> &rhs);
+        friend bool operator!= <> (const impl_ptr<Data> &lhs, const impl_ptr<Data> &rhs);
+
+        friend bool operator== <> (nullptr_t ptr, const impl_ptr<Data> &rhs) noexcept;
+        friend bool operator!= <> (nullptr_t ptr, const impl_ptr<Data> &rhs) noexcept;
+
+        friend bool operator== <> (const impl_ptr<Data> &lhs, nullptr_t ptr) noexcept;
+        friend bool operator!= <> (const impl_ptr<Data> &lhs, nullptr_t ptr) noexcept;
 
     private:
         element_type *data_;

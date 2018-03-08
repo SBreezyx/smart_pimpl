@@ -3,6 +3,8 @@ project(smart_pimpl)
 
 set(CMAKE_CXX_STANDARD 17)
 
+set(CMAKE_CXX_FLAGS_DEBUG "-g")
+
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/src)
 
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/tests)

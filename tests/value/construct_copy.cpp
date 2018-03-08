@@ -3,14 +3,38 @@
 //
 
 #include <cstdlib>
+#include <cassert>
 
 #include "value.h"
 
-int main() {
-   Value v1{0, 1, "Boo"};
+void test_default_construct_cp()
+{
+   Value v1;
+
+   assert(v1.get_n() == 0);
 
    Value v2 = v1;
-   (void) v2;
-   
+
+   assert(v1.get_n() == 0);
+   assert(v2.get_n() == 0);
+}
+
+void test_nodefault_construct_cp()
+{
+   Value v1{1};
+
+   assert(v1.get_n() == 1);
+
+   Value v2 = v1;
+
+   assert(v1.get_n() == 1);
+   assert(v2.get_n() == 1);
+}
+
+int main()
+{
+    test_default_construct_cp();
+    test_nodefault_construct_cp();
+
    return EXIT_SUCCESS;
 }
