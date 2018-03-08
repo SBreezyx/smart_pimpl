@@ -7,21 +7,26 @@
 
 namespace smart_pimpl {
 
-   template<typename Interface>
-   template<template<typename> typename Policy>
-   class pimpl<Interface>::Base {
-   public:
-      // something
+    template<typename Interface>
+    template<template<typename> typename Policy>
+    class pimpl<Interface>::Base {
+    protected:
+        using Impl = pimpl<Interface>::Impl;
 
-   protected:
-      using Impl = pimpl<Interface>::Impl;
+        Base() = default;
 
-      template<typename ...Args>
-      explicit Base(Args &&...args) : impl_{ make_ptr<Policy<Impl>>(args...) }
-      {}
+        template<typename ...Args>
+        explicit Base(Args &&...args) : impl_{ make_ptr < Policy < Impl >> (args...) }
+        {}
 
-      Policy<Impl> impl_;
-   };
+        Policy<Impl> impl() const
+        {
+            return impl_;
+        }
+
+    private:
+        mutable Policy <Impl> impl_;
+    };
 
 }
 
