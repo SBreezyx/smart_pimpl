@@ -9,7 +9,7 @@
 
 class Value : public smart_pimpl::pimpl<Value>::Value {
 public:
-   Value() = default;
+   Value();
 };
 
 
