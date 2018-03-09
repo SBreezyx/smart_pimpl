@@ -7,26 +7,33 @@
 #define SMART_PIMPL_PIMPL_HPP
 
 #include <memory>
+#include <value_ptr/value_ptr.hpp>
 
-#include "internal/helpers.hpp"
-#include "internal/impl_ptr.hpp"
+#include "smart_pimpl/internal/helpers.hpp"
 
 namespace smart_pimpl {
 
-   template<typename>
-   struct pimpl {
-      struct Impl;
+    template<typename Interface>
+    struct pimpl {
+        struct Impl;
 
-      /* Forward declarations of main classes */
-      template<template <typename> typename /* Policy*/> class Base;
+        /* Forward declarations of main classes */
+        template<typename /* Policy*/>
+        class Base;
 
-      /* Convenience typedefs for users. Add more as needed. */
-      using Entity  = Base<std::unique_ptr>;
-      using Pointer = Base<std::shared_ptr>;
-      using Value   = Base<impl_ptr>;
-   };
+        using EntityPtr = std::unique_ptr<Impl, Deleter<Impl>>;
+        using ReferencePtr = std::shared_ptr<Impl>;
+        using ValuePtr = value_ptr::value_ptr<Impl, Deleter<Impl>, Copier<Impl>>;
+
+        /* Convenience typedefs for users. Add more as needed. */
+        using Entity    = Base<EntityPtr>;
+
+        using Reference = Base<ReferencePtr>;
+
+        using Value     = Base<value_ptr>;
+    };
 }
 
-#include "internal/base.hpp"
+#include "smart_pimpl/internal/base.hpp"
 
 #endif // SMART_PIMPL_PIMPL_HPP

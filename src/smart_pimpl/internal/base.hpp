@@ -8,19 +8,24 @@
 namespace smart_pimpl {
 
     template<typename Interface>
-    template<template<typename> typename Policy>
+    template<typename Ptr>
     class pimpl<Interface>::Base {
     protected:
         using Impl = pimpl<Interface>::Impl;
-        using Ptr = Policy<Impl>;
 
-        Base() = default;
+        Base() requires std::is_same_v<Ptr, pimpl<Interface>::ReferencePtr> = default;
 
-        template<typename ...Args>
-        explicit Base(Args &&...args) : impl_{ make_ptr <Ptr> (args...) }
+        Base() requires std::is_same_v<Ptr, pimpl<Interface>::EntityPtr> : impl_(nullptr, nullptr) {}
+
+        Base(Ptr impl) :
+            impl_{ std::move(impl) }
         {}
 
-        Ptr& impl()
+        template<typename ...Args>
+        explicit Base(Args &&...args) : impl_{ make_ptr<Ptr, Impl>(args...) }
+        {}
+
+        Ptr &impl()
         {
             /* This `if` is only entered we were default constructed from an argumentless
              * constructor, such as the compiler generated one or an explicit user-defined one.
@@ -30,7 +35,7 @@ namespace smart_pimpl {
              * then the program won't compile because overload resolution will fail.
              */
             if (impl_ == nullptr) {
-                impl_ = make_ptr<Policy<Impl>>();
+                impl_ = make_ptr<Ptr, Impl>();
             }
 
             return impl_;
@@ -39,7 +44,6 @@ namespace smart_pimpl {
     private:
         mutable Ptr impl_;
     };
-
 }
 
 #endif //SMART_PIMPL_BASE_HPP

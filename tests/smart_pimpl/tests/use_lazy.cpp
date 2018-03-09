@@ -5,7 +5,9 @@
 #include <cstdlib>
 #include <cassert>
 
-#include "value.h"
+#include "../entity/Entity.h"
+#include "../reference/reference.h"
+#include "../value/value.h"
 
 int main()
 {
