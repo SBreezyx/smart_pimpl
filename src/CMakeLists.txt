@@ -5,12 +5,12 @@ add_library(smart_pimpl INTERFACE)
 target_include_directories(smart_pimpl
         INTERFACE
         $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src>
+        $<INSTALL_INTERFACE:include>
         )
 
 if (INSTALL)
     install(TARGETS smart_pimpl
             EXPORT smart_pimplTargets
-            INCLUDES DESTINATION include
     )
 
     include(CMakePackageConfigHelpers)
