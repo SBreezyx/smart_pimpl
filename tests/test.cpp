@@ -7,7 +7,7 @@
 #include "test.h"
 
 template<>
-struct smart_pimpl::pimpl<Test>::Impl {
+struct SmartPimpl::Pimpl<Test>::Impl {
     explicit Impl(int N = 0) : n{ N } {}
 
     virtual auto secret() -> int
@@ -18,7 +18,7 @@ struct smart_pimpl::pimpl<Test>::Impl {
     int n;
 };
 
-struct SecretImpl : public smart_pimpl::pimpl<Test>::Impl {
+struct SecretImpl : public SmartPimpl::Pimpl<Test>::Impl {
     SecretImpl (int n) : Impl(n) {}
 
     auto secret() -> int override

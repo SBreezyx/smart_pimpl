@@ -7,18 +7,18 @@
 
 #include <string>
 
-#include <pimpl.hpp>
+#include <smart_pimpl/smart_pimpl.hpp>
 
 #ifdef e
-#define my_base smart_pimpl::pimpl<Test>::Entity
+#define my_base SmartPimpl::Pimpl<Test>::Entity
 #endif
 
 #ifdef r
-#define my_base smart_pimpl::pimpl<Test>::Reference
+#define my_base SmartPimpl::Pimpl<Test>::Reference
 #endif
 
 #ifdef v
-#define my_base smart_pimpl::pimpl<Test>::Value
+#define my_base SmartPimpl::Pimpl<Test>::Value
 #endif
 
 class Test : my_base {
