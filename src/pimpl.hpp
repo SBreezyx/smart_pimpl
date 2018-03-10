@@ -55,7 +55,7 @@ namespace smart_pimpl {
             return Policy(new T(std::forward<Args>(args)...), default_delete<Impl>);
         }
 
-        auto impl() -> Ptr&
+        auto impl() const -> Ptr&
         {
             /* This `if` is only entered we were default constructed from an argumentless
              * constructor, such as the compiler generated one or an explicit user-defined one.
@@ -69,6 +69,14 @@ namespace smart_pimpl {
             }
 
             return impl_;
+        }
+
+        /*
+         * Switch out the implementation with another (possibly derived) implementation!
+         */
+        auto reset(Ptr new_impl) -> void
+        {
+            impl_ = std::move(new_impl);
         }
 
     private:
