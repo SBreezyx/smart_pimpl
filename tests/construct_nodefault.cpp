@@ -5,15 +5,13 @@
 #include <cstdlib>
 #include <cassert>
 
-#include "../entity/Entity.h"
-#include "../reference/reference.h"
-#include "../value/value.h"
+#include "test.h"
 
 void test_nodefault()
 {
-    Value v{ 1 };
+    Test t{ 1 };
 
-    assert(v.get_n() == 1);
+    assert(t.get_n() == 1);
 }
 
 int main()
