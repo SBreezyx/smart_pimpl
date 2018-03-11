@@ -22,12 +22,6 @@ namespace SmartPimpl {
     template<typename T>
     using Deleter = void (*)(T *);
 
-    template <typename T>
-    using Reference = std::shared_ptr<T>;
-
-    template <typename T>
-    using Entity = std::unique_ptr<T, Deleter<T>>;
-
     template<typename Interface,
              template<typename>
              typename Policy>
@@ -92,6 +86,15 @@ namespace SmartPimpl {
             }
         }
     };
+
+    template <typename T>
+    using Reference = Base<T, std::shared_ptr>;
+
+    template <typename T>
+    using EntityPtr = std::unique_ptr<T, Deleter<T>>;
+
+    template <typename T>
+    using Entity = Base<T, EntityPtr>;
 }
 
 #endif // SMART_PIMPL_SMART_PIMPL_HPP

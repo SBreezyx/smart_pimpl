@@ -8,7 +8,7 @@ set(CMAKE_CXX_FLAGS_DEBUG "-g")
 set(CMAKE_CXX_FLAGS_RELEASE "-Od")
 
 option(INSTALL "Set install target" ON)
-option(BUILD_TESTING "Build tests" OFF)
+option(BUILD_TESTING "Build tests" ON)
 
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/src)
 

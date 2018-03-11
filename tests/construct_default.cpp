@@ -8,11 +8,11 @@
 #include "test.h"
 
 #ifdef e
-#define def_base SmartPimpl::Base<DefTest, SmartPimpl::Entity>
+#define def_base SmartPimpl::Entity<DefTest>
 #endif
 
 #ifdef r
-#define def_base SmartPimpl::Base<DefTest, SmartPimpl::Reference>
+#define def_base SmartPimpl::Reference<DefTest>
 #endif
 
 class DefTest;
