@@ -10,38 +10,30 @@
 
 namespace SmartPimpl {
     template<typename T>
-    using Deleter = void (*)(T *);
-
-    template<typename T>
-    using Copier  = T *(*)(const T *, T *);
-
-    template<typename T>
     requires sizeof(T) > 0 && !std::is_array_v<T>
     auto default_delete(T *pimpl) -> void
     {
         delete pimpl;   // NOLINT
     }
 
-    template<typename>
-    struct Pimpl {
+    template<typename T>
+    using Deleter = void (*)(T *);
+
+    template <typename T>
+    using Reference = std::shared_ptr<T>;
+
+    template <typename T>
+    using Entity = std::unique_ptr<T, Deleter<T>>;
+
+    template<typename Interface,
+             template<typename>
+             typename Policy>
+    class Base {
+    public:
         struct Impl;
 
-        /* Forward declarations of main classes */
-        template<typename/* Policy<>*/>
-        class Base;
-
-        /* Convenience typedefs for users. Add more as needed. */
-        using Entity    = Base<std::unique_ptr<Impl, Deleter<Impl>>>;
-
-        using Reference = Base<std::shared_ptr<Impl>>;
-    };
-
-    template<typename Interface>
-    template<typename Policy>
-    class Pimpl<Interface>::Base {
     protected:
-        using Impl = Pimpl<Interface>::Impl;
-        using Ptr = Policy;
+        using Ptr = Policy<Impl>;
 
         constexpr Base() noexcept : impl_{ null_impl() } {}
         explicit Base(Ptr impl) noexcept : impl_{ std::move(impl) } {}
@@ -52,7 +44,7 @@ namespace SmartPimpl {
         template<typename T = Impl, typename ...Args>
         static auto make_impl_of(Args &&...args) -> Ptr
         {
-            return Policy(new T(std::forward<Args>(args)...), default_delete<Impl>);
+            return Ptr(new T(std::forward<Args>(args)...), default_delete<Impl>);
         }
 
         auto impl() const -> Ptr&
@@ -84,7 +76,7 @@ namespace SmartPimpl {
 
         inline constexpr auto null_impl() -> Ptr
         {
-            if constexpr (std::is_same_v<Policy, std::unique_ptr<Impl, Deleter<Impl>>>) {
+            if constexpr (std::is_same_v<Ptr, std::unique_ptr<Impl, Deleter<Impl>>>) {
                 return Ptr(nullptr, nullptr);
             } else {
                 return Ptr();

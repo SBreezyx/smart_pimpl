@@ -10,11 +10,11 @@
 #include <smart_pimpl/smart_pimpl.hpp>
 
 #ifdef e
-#define my_base SmartPimpl::Pimpl<Test>::Entity
+#define my_base SmartPimpl::Base<Test, SmartPimpl::Entity>
 #endif
 
 #ifdef r
-#define my_base SmartPimpl::Pimpl<Test>::Reference
+#define my_base SmartPimpl::Base<Test, SmartPimpl::Reference>
 #endif
 
 #ifdef v
