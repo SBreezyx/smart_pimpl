@@ -16,6 +16,9 @@ namespace SmartPimpl {
         delete pimpl;   // NOLINT
     }
 
+    template <typename T>
+    concept bool DefaultConstructible = requires { T(); };
+
     template<typename T>
     using Deleter = void (*)(T *);
 
@@ -43,12 +46,13 @@ namespace SmartPimpl {
 
         template<typename T = Impl, typename ...Args>
         static auto make_impl_of(Args &&...args) -> Ptr
+        requires std::is_constructible_v<T, Args...> && std::is_base_of_v<Impl, T>
         {
             return Ptr(new T(std::forward<Args>(args)...), default_delete<Impl>);
         }
 
-        auto impl() const -> Ptr&
-        {
+        auto impl() const -> Impl* requires DefaultConstructible<Impl>
+            {
             /* This `if` is only entered we were default constructed from an argumentless
              * constructor, such as the compiler generated one or an explicit user-defined one.
              * We must now lazily instantiate the impl_ptr, which can only default construct the
@@ -60,7 +64,12 @@ namespace SmartPimpl {
                 impl_ = make_impl_of<Impl>();
             }
 
-            return impl_;
+            return impl_.get();
+        }
+
+        auto impl() const -> Impl*
+        {
+            return impl_.get();
         }
 
         /*

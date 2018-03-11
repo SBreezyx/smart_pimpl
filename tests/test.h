@@ -17,9 +17,6 @@
 #define my_base SmartPimpl::Base<Test, SmartPimpl::Reference>
 #endif
 
-#ifdef v
-#define my_base SmartPimpl::Pimpl<Test>::Value
-#endif
 
 class Test : my_base {
 public:

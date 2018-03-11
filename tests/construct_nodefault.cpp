@@ -7,6 +7,39 @@
 
 #include "test.h"
 
+#ifdef e
+#define nodef_base SmartPimpl::Base<NoDefTest, SmartPimpl::Entity>
+#endif
+
+#ifdef r
+#define nodef_base SmartPimpl::Base<NoDefTest, SmartPimpl::Reference>
+#endif
+
+
+class NoDefTest;
+
+template<>
+struct nodef_base::Impl {
+    Impl(int data) :
+        my_data{ data }
+    {
+    }
+
+    int my_data;
+};
+
+class NoDefTest : nodef_base {
+public:
+    explicit NoDefTest(int data) : Base(data)
+    {
+    }
+
+    auto get_my_data() -> int
+    {
+        return impl()->my_data;
+    }
+};
+
 void test_nodefault()
 {
     Test t{ 1 };
@@ -14,8 +47,17 @@ void test_nodefault()
     assert(t.get_n() == 1);
 }
 
+void test_nodefault_get()
+{
+    NoDefTest nt{ 15 };
+
+    assert(nt.get_my_data() == 15);
+}
+
 int main()
 {
     test_nodefault();
+
+    test_nodefault_get();
     return EXIT_SUCCESS;
 }
