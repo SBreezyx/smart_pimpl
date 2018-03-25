@@ -8,6 +8,12 @@ target_include_directories(smart_pimpl
         $<INSTALL_INTERFACE:include>
         )
 
+target_compile_features(smart_pimpl
+        INTERFACE
+        cxx_constexpr
+        cxx_std_17
+        )
+
 if (INSTALL)
     install(TARGETS smart_pimpl
             EXPORT smart_pimplTargets
@@ -16,7 +22,7 @@ if (INSTALL)
     include(CMakePackageConfigHelpers)
     write_basic_package_version_file(
             "${PROJECT_BINARY_DIR}/smart_pimplConfigVersion.cmake"
-            VERSION 1.0.0
+            VERSION 1.0.1
             COMPATIBILITY AnyNewerVersion
     )
 

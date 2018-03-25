@@ -3,9 +3,12 @@ project(SmartPimpl)
 
 set(CMAKE_CXX_STANDARD 17)
 
-set(CMAKE_CXX_FLAGS "-fconcepts")
-set(CMAKE_CXX_FLAGS_DEBUG "-g")
-set(CMAKE_CXX_FLAGS_RELEASE "-Od")
+if (UNIX)
+    set(CMAKE_CXX_FLAGS_DEBUG "-g -Wall -Werror")
+    set(CMAKE_CXX_FLAGS_RELEASE "-Od")
+elseif (MSVC)
+    set(CMAKE_CXX_FLAGS_RELEASE "/Od")
+endif ()
 
 option(INSTALL "Set install target" ON)
 option(BUILD_TESTING "Build tests" ON)

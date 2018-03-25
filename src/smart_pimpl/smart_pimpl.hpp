@@ -6,6 +6,7 @@
 #ifndef SMART_PIMPL_SMART_PIMPL_HPP
 #define SMART_PIMPL_SMART_PIMPL_HPP
 
+#include <type_traits>
 #include <memory>
 
 namespace SmartPimpl {
@@ -26,20 +27,13 @@ namespace SmartPimpl {
      * @tparam T - the Class implementation struct. Constrained by not being an array (unsupported) and being complete
      * @param pimpl [in] - pointer the implementation to be deleted.
      */
-    template<typename T>
-    requires sizeof(T) > 0 && !std::is_array_v<T>
+    template<typename T, typename Constraint = std::enable_if_t<!std::is_array_v<T> && (sizeof(T) > 0), void>>
+    // TODO: Uncomment this when C++20 is released
+    // requires sizeof(T) > 0 && !std::is_array_v<T>
     auto default_delete(T *pimpl) -> void
     {
         delete pimpl;   // NOLINT
     }
-
-    /**
-     * DefaultConstructible
-     * A concept stand in for std::is_constructible<T>
-     * @tparam T - the class to test constructibility for.
-     */
-    template <typename T>
-    concept bool DefaultConstructible = requires { T(); };
 
     /**
      * Base - the base class which handles all the SmartPimpl magic.
@@ -112,9 +106,12 @@ namespace SmartPimpl {
          * @param args- the arugments.
          * @return - a new pointer-to-implementation of type Policy.
          */
-        template<typename T = Impl, typename ...Args>
+        template<typename T = Impl,
+                 typename ...Args,
+                 typename Constraint = std::enable_if_t<std::is_constructible_v<T, Args...> && std::is_base_of_v<Impl, T>, void>>
         static auto make_impl_of(Args &&...args) -> Ptr
-        requires std::is_constructible_v<T, Args...> && std::is_base_of_v<Impl, T>
+        // TODO: Uncomment this when C++20 is released
+        //requires std::is_constructible_v<T, Args...> && std::is_base_of_v<Impl, T>
         {
             return Ptr(new T(std::forward<Args>(args)...), default_delete<Impl>);
         }
@@ -126,7 +123,9 @@ namespace SmartPimpl {
          *
          * @return - the pointer to the implementation.
          */
-        auto impl() const -> Impl* requires DefaultConstructible<Impl>
+        template <typename T = Impl>
+        auto impl() const -> std::enable_if_t<std::is_default_constructible_v<T>, T*>
+        // TODO: Uncomment this C++20 is released. requires std::is_default_constructible_v<Impl>
         {
             /* This `if` is only entered we were default constructed from an argumentless
              * constructor, such as the compiler generated one or an explicit user-defined one.
@@ -149,7 +148,10 @@ namespace SmartPimpl {
          *
          * @return
          */
-        auto impl() const -> Impl*
+        template <typename T = Impl>
+        auto impl(int=0) const -> std::enable_if_t<!std::is_default_constructible_v<T>, T*>
+        // TODO: Uncomment this C++20 is released. requires !std::is_default_constructible_v<Impl>
+
         {
             return impl_.get();
         }
