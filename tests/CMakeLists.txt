@@ -60,21 +60,16 @@ foreach (i RANGE ${ntest})
         set(test_name ${c}.${name})
         set(src_name ${src})
 
-        try_compile(DID_COMPILE ${CMAKE_CURRENT_BINARY_DIR}
-                SOURCES ${src_name} ${CMAKE_CURRENT_LIST_DIR}/test.cpp
-                COMPILE_DEFINITIONS "-D${c} -fconcepts -I/home/simon/Code/smart_pimpl/src"
-                CXX_STANDARD 17
-                CXX_STANDARD_REQUIRED TRUE
-                OUTPUT_VARIABLE res
-                )
 
-        if (DID_COMPILE)
-            add_executable(${exe_name} ${src_name} ${CMAKE_CURRENT_LIST_DIR}/test.h ${CMAKE_CURRENT_LIST_DIR}/test.cpp)
-            target_link_libraries(${exe_name} smart_pimpl)
-            target_compile_definitions(${exe_name} PRIVATE ${c})
+        if(${c} STREQUAL "e" AND ${test_name} MATCHES "cp")
+            continue()
+        endif()
 
-            add_test(NAME ${test_name} COMMAND ${exe_name})
-        endif ()
+        add_executable(${exe_name} ${src_name} ${CMAKE_CURRENT_LIST_DIR}/test.h ${CMAKE_CURRENT_LIST_DIR}/test.cpp)
+        target_link_libraries(${exe_name} smart_pimpl)
+        target_compile_definitions(${exe_name} PRIVATE ${c})
+
+        add_test(NAME ${test_name} COMMAND ${exe_name})
 
     endforeach ()
 endforeach ()

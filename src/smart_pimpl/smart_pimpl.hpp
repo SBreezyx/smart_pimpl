@@ -27,11 +27,13 @@ namespace SmartPimpl {
      * @tparam T - the Class implementation struct. Constrained by not being an array (unsupported) and being complete
      * @param pimpl [in] - pointer the implementation to be deleted.
      */
-    template<typename T, typename Constraint = std::enable_if_t<!std::is_array_v<T> && (sizeof(T) > 0), void>>
+    template<typename T>
     // TODO: Uncomment this when C++20 is released
     // requires sizeof(T) > 0 && !std::is_array_v<T>
     auto default_delete(T *pimpl) -> void
     {
+        static_assert(!std::is_array_v<T>);
+        static_assert(sizeof(T) > 0);
         delete pimpl;   // NOLINT
     }
 
@@ -149,7 +151,7 @@ namespace SmartPimpl {
          * @return
          */
         template <typename T = Impl>
-        auto impl(int=0) const -> std::enable_if_t<!std::is_default_constructible_v<T>, T*>
+        auto impl() const -> std::enable_if_t<!std::is_default_constructible_v<T>, T*>
         // TODO: Uncomment this C++20 is released. requires !std::is_default_constructible_v<Impl>
 
         {

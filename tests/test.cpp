@@ -15,6 +15,8 @@ struct my_base::Impl {
         return 13;
     }
 
+    virtual ~Impl() = default;
+
     int n;
 };
 
