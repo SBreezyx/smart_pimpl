@@ -64,8 +64,8 @@ namespace SmartPimpl {
      * @tparam Policy - storage policy used. Affects copyablity and movability.
      */
     template<typename Interface,
-             template<typename>
-             typename Policy>
+        template<typename>
+        typename Policy>
     class Base {
     public:
         struct Impl;
@@ -77,14 +77,16 @@ namespace SmartPimpl {
          * Default constructor.
          * Creates a nulled implementation used for lazy instantiation.
          */
-        constexpr Base() noexcept : impl_{ null_impl() } {}
+        constexpr Base() noexcept : impl_{ null_impl() }
+        {}
 
         /**
          * Constructor for use with the named constructor idiom.
          * Allows for a static member function to construct different implementations if needed.
          * @param impl - preconstructed implementation.
          */
-        explicit Base(Ptr impl) noexcept : impl_{ std::move(impl) } {}
+        explicit Base(Ptr impl) noexcept : impl_{ std::move(impl) }
+        {}
 
         /**
          * Forwarding constructor used to create an implementation.
@@ -96,7 +98,8 @@ namespace SmartPimpl {
          * @param args - the arguments.
          */
         template<typename ...Args>
-        explicit Base(Args &&...args) : impl_{ make_impl_of<Impl>(args...) } {}
+        explicit Base(Args &&...args) : impl_{ make_impl_of<Impl>(args...) }
+        {}
 
         /**
          * make_impl_of, as the name suggests, creates a specific implementation using the Policy with
@@ -109,8 +112,9 @@ namespace SmartPimpl {
          * @return - a new pointer-to-implementation of type Policy.
          */
         template<typename T = Impl,
-                 typename ...Args,
-                 typename Constraint = std::enable_if_t<std::is_constructible_v<T, Args...> && std::is_base_of_v<Impl, T>, void>>
+            typename ...Args,
+            typename Constraint = std::enable_if_t<
+                std::is_constructible_v<T, Args...> && std::is_base_of_v<Impl, T>, void>>
         static auto make_impl_of(Args &&...args) -> Ptr
         // TODO: Uncomment this when C++20 is released
         //requires std::is_constructible_v<T, Args...> && std::is_base_of_v<Impl, T>
@@ -119,14 +123,14 @@ namespace SmartPimpl {
         }
 
         /**
-         * impl() - a getter function which is overloaded based on if Impl is default constructible.
-         * This paricular overload lazily instantiates the implementation pointer to allow for things such as
-         * compiler generated default constructors.
+         * impl() - a getter function which determines if impl_ is default constructible (constexpr if) and then
+         * default constructs it if it is. This is to allow for compiler generated default constructors for convenience.
+         * If impl_ is is not default constructible then we assume that the derived class also is not default
+         * constructible and hence impl_ is already initialised -- it is then returned.
          *
          * @return - the pointer to the implementation.
          */
-        template <typename T = Impl>
-        auto impl() const -> std::enable_if_t<std::is_default_constructible_v<T>, T*>
+        auto impl() const -> Impl *
         // TODO: Uncomment this C++20 is released. requires std::is_default_constructible_v<Impl>
         {
             /* This `if` is only entered we were default constructed from an argumentless
@@ -136,25 +140,12 @@ namespace SmartPimpl {
              * to define one for the implementation (so now there's a mismatch between constructors),
              * then the program won't compile because overload resolution will fail.
              */
-            if (impl_ == nullptr) {
-                impl_ = make_impl_of<Impl>();
+            if constexpr (std::is_default_constructible_v<Impl>) {
+                if (impl_ == nullptr) {
+                    impl_ = make_impl_of<Impl>();
+                }
             }
 
-            return impl_.get();
-        }
-
-        /**
-         * impl() - a getter function which is overloaded based on if Impl is default constructible.
-         * This particular overload simply returns to the pointer to implementation, and relies on impl_
-         * being already constructed.
-         *
-         * @return
-         */
-        template <typename T = Impl>
-        auto impl() const -> std::enable_if_t<!std::is_default_constructible_v<T>, T*>
-        // TODO: Uncomment this C++20 is released. requires !std::is_default_constructible_v<Impl>
-
-        {
             return impl_.get();
         }
 
@@ -167,7 +158,7 @@ namespace SmartPimpl {
          *
          * @return - a pointer to a nulled implementation.
          */
-        inline constexpr auto null_impl() -> Ptr
+        constexpr auto null_impl() -> Ptr
         {
             if constexpr (std::is_same_v<Ptr, std::unique_ptr<Impl, Deleter<Impl>>>) {
                 return Ptr(nullptr, nullptr);
@@ -185,7 +176,7 @@ namespace SmartPimpl {
      *
      * @tparam T - the interface of the class using SmartPimpl (the class which does the derving).
      */
-    template <typename T>
+    template<typename T>
     using Reference = Base<T, std::shared_ptr>;
 
     /**
@@ -194,7 +185,7 @@ namespace SmartPimpl {
      * @tparam T - the implementation of the class using pointer.
      * @see Entity
      */
-    template <typename T>
+    template<typename T>
     using EntityPtr = std::unique_ptr<T, Deleter<T>>;
 
     /**
@@ -204,7 +195,7 @@ namespace SmartPimpl {
      *
      * @test T - the interface of the class using SmartPimpl (the which does the deriving).
      */
-    template <typename T>
+    template<typename T>
     using Entity = Base<T, EntityPtr>;
 }
 
